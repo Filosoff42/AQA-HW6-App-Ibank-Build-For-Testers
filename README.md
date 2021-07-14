@@ -1,0 +1,1 @@
+# App-Ibank-Build-For-Testers [![Build status](https://ci.appveyor.com/api/projects/status/bo86a20vjyyypap1?svg=true)](https://ci.appveyor.com/project/Filosoff42/aqa-hw6-app-ibank-build-for-testers)
