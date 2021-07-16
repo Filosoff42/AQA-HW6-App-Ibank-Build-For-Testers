@@ -1,9 +1,10 @@
+package test;
+
 import lombok.val;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import page.DashboardPage;
-import page.DataHelper;
+import data.DataHelper;
 import page.LoginPage;
 
 import static com.codeborne.selenide.Selenide.open;
@@ -12,18 +13,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AppIbankBuildForTestersTest {
 
-//    private static CardObject card1 = new CardObject("92df3f1c-a033-48e6-8390-206f6b1f56c0", "**** **** **** 0001", 10000);
-//    private static CardObject card2 = new CardObject("0f3f5c2a-249e-4c3d-8287-09f7a039391d", "**** **** **** 0002", 10000);
-
     @BeforeEach
     void openPage() {
+        open("http://localhost:9999");
+    }
+
+    @AfterEach
+    void resetBalance() {
         open("http://localhost:9999");
         val loginPage = new LoginPage();
         val authInfo = DataHelper.getAuthInfo();
         val verificationPage = loginPage.validLogin(authInfo);
         val verificationCode = DataHelper.getVerificationCodeFor(authInfo);
         val dashboardPage = verificationPage.validVerify(verificationCode);
-        dashboardPage.resetCardsBalance();
+        DataHelper.resetCardsBalance();
         open("http://localhost:9999");
     }
 
@@ -35,8 +38,10 @@ public class AppIbankBuildForTestersTest {
         val verificationPage = loginPage.validLogin(authInfo);
         val verificationCode = DataHelper.getVerificationCodeFor(authInfo);
         val dashboardPage = verificationPage.validVerify(verificationCode);
-        dashboardPage.transferAmountFromOneCardToAnother(5000, "5559 0000 0000 0001", "5559 0000 0000 0002");
-        assertEquals(15000, dashboardPage.getCardBalance("0002"));
+        val transferPage = dashboardPage.goToTransferPageForCard(DataHelper.getCardNumber2());
+        transferPage.transferAmountFromThisCard(5000, DataHelper.getCardNumber1());
+        assertEquals(15000, dashboardPage.getCardBalance(DataHelper.getCardNumber2()));
+        assertEquals(5000, dashboardPage.getCardBalance(DataHelper.getCardNumber1()));
     }
 
     @Test
@@ -46,8 +51,10 @@ public class AppIbankBuildForTestersTest {
         val verificationPage = loginPage.validLogin(authInfo);
         val verificationCode = DataHelper.getVerificationCodeFor(authInfo);
         val dashboardPage = verificationPage.validVerify(verificationCode);
-        dashboardPage.transferAmountFromOneCardToAnother(10000, "5559 0000 0000 0002", "5559 0000 0000 0001");
-        assertEquals(20000, dashboardPage.getCardBalance("0001"));
+        val transferPage = dashboardPage.goToTransferPageForCard(DataHelper.getCardNumber1());
+        transferPage.transferAmountFromThisCard(10000, DataHelper.getCardNumber2());
+        assertEquals(20000, dashboardPage.getCardBalance(DataHelper.getCardNumber1()));
+        assertEquals(0, dashboardPage.getCardBalance(DataHelper.getCardNumber2()));
     }
 
 }
