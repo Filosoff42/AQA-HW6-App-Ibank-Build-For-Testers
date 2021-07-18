@@ -27,7 +27,6 @@ public class AppIbankBuildForTestersTest {
         val verificationCode = DataHelper.getVerificationCodeFor(authInfo);
         val dashboardPage = verificationPage.validVerify(verificationCode);
         DataHelper.resetCardsBalance();
-        open("http://localhost:9999");
     }
 
 
